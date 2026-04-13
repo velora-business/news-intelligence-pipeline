@@ -1,7 +1,7 @@
 // ============================================================
 // CONFIGURATION
 // ============================================================
-const SLACK_TOKEN = "YOUR SLACK BOT TOKEN HERE"; // Remember to revoke/change!
+const SLACK_TOKEN = "YOUR SLACK BOT TOKEN HERE"; // Get this from api.slack.com/apps
 const CHANNEL_ID = "YOUR SLACK CHANNEL ID HERE"; // this is where the news will come in via RSS
 const SHEET_NAME = "YOUR GOOGLE SHEET TAB NAME HERE"; // this is where the slack based RSS will be funneled into
 const RAILWAY_URL = "YOUR RAILWAY URL HERE/scrape"; // Replace with your Railway URL
@@ -90,7 +90,7 @@ function fetchAseanNews() {
 
       const dateStr = `${day}${suffix} ${month} ${year} ${time}`;
 
-      // --- NEW: Added "" for Col D (AI Summary) and "PENDING" for Col E (Status) ---
+      // Added "" for Col D (AI Summary) and "PENDING" for Col E (Status) ---
       rows.push([dateStr, actualUrl, snippet, "", "PENDING"]);
 
     } catch(e) {
@@ -100,7 +100,7 @@ function fetchAseanNews() {
 
   if (rows.length > 0) {
     if (sheet.getLastRow() === 0) {
-      // --- NEW: Headers now include AI Summary and Status columns ---
+      // Headers now include AI Summary and Status columns ---
       sheet.appendRow(["Timestamp", "URL", "Snippet", "AI Summary", "Status"]);
     }
     sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, 5).setValues(rows);
@@ -121,7 +121,7 @@ function fetchAseanNews() {
 
 // ============================================================
 // PART 2: SCRAPE AND SUMMARISE
-// NEW: Reads all PENDING rows, sends them to Railway in batches
+// Reads all PENDING rows, sends them to Railway in batches
 // of 10, writes summaries to Col D and status to Col E.
 // Stops before 6 min limit and schedules continuation if needed.
 // ============================================================
@@ -156,7 +156,7 @@ function scrapeAndSummarise() {
   // Process in batches of BATCH_SIZE
   for (let b = 0; b < pendingIndices.length; b += BATCH_SIZE) {
 
-    // --- NEW: Time check — stop if approaching 5.5 minute limit ---
+    //Time check — stop if approaching 5.5 minute limit ---
     if (Date.now() - startTime > TIME_LIMIT_MS) {
       Logger.log("Approaching time limit. Scheduling continuation.");
       scheduleContinuation();
@@ -169,7 +169,7 @@ function scrapeAndSummarise() {
     Logger.log(`Processing batch of ${batchUrls.length} URLs...`);
 
     try {
-      // --- NEW: Send batch to Railway endpoint ---
+      //Send batch to Railway endpoint ---
       const response = UrlFetchApp.fetch(RAILWAY_URL, {
         method: "POST",
         contentType: "application/json",
@@ -189,7 +189,7 @@ function scrapeAndSummarise() {
         continue;
       }
 
-      // --- NEW: Write summaries and statuses back to sheet ---
+      //Write summaries and statuses back to sheet ---
       data.results.forEach((result, idx) => {
         const rowNum = batchIndices[idx] + 2;
         const summary = result.summary;
@@ -221,7 +221,7 @@ function scrapeAndSummarise() {
 
 // ============================================================
 // PART 3: CONTINUATION PATTERN
-// NEW: If time runs out, schedules continueScraping() to run
+// If time runs out, schedules continueScraping() to run
 // 1 minute later and pick up all remaining PENDING rows
 // ============================================================
 function scheduleContinuation() {
