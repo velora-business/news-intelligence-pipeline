@@ -1,4 +1,4 @@
-# news-intelligence-pipeline
+# ABOUT
 Test project of automated pipeline that scrapes industry news from slack based RSS feed, summarises articles with AI on google sheets
 
 Licensed under CC BY-NC 4.0 — free to view and learn from. 
