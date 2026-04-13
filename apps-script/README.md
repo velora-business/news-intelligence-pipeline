@@ -1,4 +1,4 @@
-# Velora — News Intelligence Pipeline
+# Velora — News Intelligence Pipeline - Google Apps Script
 
 ## Overview
 This Google Apps Script is the trigger layer of the news intelligence pipeline. It orchestrates the full flow from Slack to Google Sheets to AI summarisation.
